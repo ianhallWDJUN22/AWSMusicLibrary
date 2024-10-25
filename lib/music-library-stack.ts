@@ -22,14 +22,16 @@ export class MusicLibraryStack extends cdk.Stack {
       },
     });    
 
-    bucket.grantRead(uploadMusicFunction);
+    bucket.grantReadWrite(uploadMusicFunction);
+    bucket.grantPut(uploadMusicFunction);
 
     const api = new apigateway.RestApi(this, 'MusicAPIIngestion', {
       restApiName: 'MusicLibraryService',
       description: 'Ingress for music library service',
+      binaryMediaTypes: ['application/octet-stream', 'multipart/form-data', 'image/*'],
       apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
     });
-
+    
     const apiKey = api.addApiKey('MusicIngestionAPIKey');
 
     const plan = api.addUsagePlan('MusicIngestionUsagePlan', {
