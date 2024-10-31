@@ -1,16 +1,17 @@
 cd lambda
-echo "installing lambda dependencies"
+echo "...INSTALLING LAMBDA DEPENDENCIES..."
 npm i
-echo "installation complete"
-echo "copying node modules"
+echo "...INSTALLATION COMPLETE..."
+echo "...COPYING NODE MODULES.."
 cp -R node_modules dist
-echo "node modules copy complete"
+echo "...NODE MODULES COPY COMPLETE..."
 cd ..
-echo "building lambda"
+echo "...BUILDING LAMBDA..."
 npm run build-lambda
-echo "build complete"
-echo "running cdk synth"
+echo "...BUILDING COMPLETE..."
+echo "...RUNNING CDK SYNTH..."
 cdk synth
-echo "synth complete"
-echo "running cdk deploy"
+echo "...SYNTH COMPLETE..."
+echo "...RUNNING CDK DEPLOY..."
 cdk deploy
+echo "...DEPLOY COMPLETE..."

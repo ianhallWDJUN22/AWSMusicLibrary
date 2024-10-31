@@ -28,7 +28,7 @@ export class MusicLibraryStack extends cdk.Stack {
     const api = new apigateway.RestApi(this, 'MusicAPIIngestion', {
       restApiName: 'MusicLibraryService',
       description: 'Ingress for music library service',
-      binaryMediaTypes: ['application/octet-stream', 'multipart/form-data', 'image/*'],
+      binaryMediaTypes: ['application/octet-stream', 'multipart/form-data', 'image/*', 'audio/mpeg',],
       apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
     });
     
