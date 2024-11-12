@@ -16,8 +16,10 @@ export const handler = async (event: any): Promise<any> => {
   }
 
   const bucketName: string = process.env.BUCKET_NAME;
+
   console.log(`upload lambda invoked: ${bucketName}`);
   console.log(`eventbody:${JSON.stringify(event)}`);
+
   // Check if the event body is present
   try {
     
@@ -42,15 +44,11 @@ export const handler = async (event: any): Promise<any> => {
         body: JSON.stringify({ message: "no event type received" }),
       };
     }
-    // if (event.body.eventType != "get" || event.body.eventType != "update") {
-    //   return {
-    //     statusCode: 400,
-    //     body: JSON.stringify({ message: "no event type received" }),
-    //   };
-    // }
+
     // Set the expiration time for the presigned URL (e.g., 15 minutes)
     const urlExpiration = 15 * 60; // in seconds
     let command;
+
     // Generate the presigned URL
     switch (eventType) {
       case "get":
