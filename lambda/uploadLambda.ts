@@ -4,8 +4,13 @@ import {
   PutObjectCommand,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 const client = new S3Client({ region: "us-east-1" });
+
+//Add the line underneath back in when you are ready to resume connecting 
+//this lambda function to DynamoDB 
+//const dynamoClient = new DynamoDBClient({ region: "us-east-1" });
 
 export const handler = async (event: any): Promise<any> => {
   if (!process.env.BUCKET_NAME) {

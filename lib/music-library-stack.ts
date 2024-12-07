@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 export class MusicLibraryStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,7 +14,15 @@ export class MusicLibraryStack extends cdk.Stack {
       versioned: true,
     });
 
-    // Upload Lambda Function
+    // DynamoDB Table
+    const metadataTable = new dynamodb.Table(this, "MetadataTable", {
+      partitionKey: { name: "FileID", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "UserID", type: dynamodb.AttributeType.STRING }, // Optional, based on your design
+      removalPolicy: cdk.RemovalPolicy.RETAIN, // Retain data when the stack is deleted
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+    });
+
+    // Upload (Put/Get) Lambda Function
     const uploadMusicFunction = new lambda.Function(
       this,
       "UploadMusicFunction",
@@ -27,6 +36,7 @@ export class MusicLibraryStack extends cdk.Stack {
       });
 
     bucket.grantReadWrite(uploadMusicFunction);
+    metadataTable.grantReadWriteData(uploadMusicFunction);
 
     // Edit Lambda Function
     const editMusicFunction = new lambda.Function(this, "EditMusicFunction", {
@@ -39,6 +49,7 @@ export class MusicLibraryStack extends cdk.Stack {
     });
 
     bucket.grantReadWrite(editMusicFunction);
+    metadataTable.grantReadWriteData(editMusicFunction);
 
     // Delete Lambda Function
     const deleteMusicFunction = new lambda.Function(
@@ -55,6 +66,7 @@ export class MusicLibraryStack extends cdk.Stack {
     );
 
     bucket.grantReadWrite(deleteMusicFunction);
+    metadataTable.grantReadWriteData(deleteMusicFunction);
 
     const api = new apigateway.RestApi(this, "MusicAPIIngestion", {
       restApiName: "MusicLibraryService",
