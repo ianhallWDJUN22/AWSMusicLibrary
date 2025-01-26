@@ -68,7 +68,6 @@ const App = () => {
                 </Container>
             </div>
         </Router>
-        <div>testing</div>
         </div>
     );
 };

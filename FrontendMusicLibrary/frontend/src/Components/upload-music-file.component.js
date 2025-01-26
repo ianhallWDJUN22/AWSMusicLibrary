@@ -13,14 +13,12 @@ import MusicUploadForm
 
 // UploadMusicFile Component
 const UploadMusicFile = () => {
-    console.log("uploadMusicFile-1")
     const [formValues, setFormValues] =
         useState(
             {
                 name: '',
                 // File uploader : '', add these fields in when meta data is set up
             })
-            console.log("uploadMusicFile-2")
     // onSubmit handler
     const onSubmit =
         musicObject => {
@@ -35,7 +33,6 @@ const UploadMusicFile = () => {
                 })
                 .catch(err => alert('Something went wrong'))
         }
-        console.log("uploadMusicFile-3")
     // Return student form
     return (
         <MusicUploadForm initialValues={formValues}
