@@ -38,7 +38,7 @@ const App = () => {
                             <Nav className="justify-content-end">
                                 <Nav>
                                     <Link to={"/upload-music-file"} className="nav-link">
-                                        Upload Music File
+                                        Upload Music
                                     </Link>
                                 </Nav>
 
@@ -73,15 +73,3 @@ const App = () => {
 };
 
 export default App;
-// import React from 'react';
-
-// function App() {
-//   return (
-//     <div>
-//       <h1>Hello from a super basic React App!</h1>
-//       <p>If you see this text, React is successfully rendering.</p>
-//     </div>
-//   );
-// }
-
-// export default App;
