@@ -10,30 +10,36 @@ const UploadMusicFile = () => {
       alert("Please select a file first.");
       return;
     }
-
+  
     try {
-      // Step 1: Request a pre-signed URL from the API Gateway
+      // ✅ Ensure the filename ends in .mp3
+      const fileName = musicObject.name.endsWith(".mp3") ? musicObject.name : `${musicObject.name}.mp3`;
+  
+      // Step 1: Request a pre-signed URL from API Gateway
       const response = await axios.post(
-        "https://msrii21sj5.execute-api.us-east-1.amazonaws.com/test-invoke-stage/uploadMusicResource.aws.com",
-        JSON.stringify({
-          eventType: "upload", // Must match what your Lambda function expects
-          fileName: musicObject.name,
-        }),
+        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_UPLOAD_ENDPOINT}`,
+        {
+          eventType: "upload",
+          fileName, 
+        },
         {
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": "YOUR_API_KEY",
+            "x-api-key": process.env.REACT_APP_API_KEY,
           },
         }
       );
-
+  
       const { uploadUrl } = response.data;
-
-      // Step 2: Upload the file to S3 using the pre-signed URL
+  
+      // Step 2: Upload the file to S3
       await axios.put(uploadUrl, selectedFile, {
-        headers: { "Content-Type": selectedFile.type },
+        headers: { 
+          "Content-Type": selectedFile.type || "audio/mpeg",
+        },
+        transformRequest: [(data) => data], // ✅ Prevents Axios from encoding the file
       });
-
+  
       alert("File successfully uploaded");
     } catch (err) {
       console.error("Upload error:", err);
@@ -54,52 +60,3 @@ const UploadMusicFile = () => {
 };
 
 export default UploadMusicFile;
-
-
-// // src/Components/upload-music-file.component.js
-
-// // UploadMusicFile Component for uploading new music
-// // Import Modules
-// import React,
-// {
-//     useState,
-//     useEffect
-// } from "react";
-// import axios from 'axios';
-// import MusicUploadForm
-//     from "./MusicUploadForm.js";
-
-// // UploadMusicFile Component
-// const UploadMusicFile = () => {
-//     const [formValues, setFormValues] =
-//         useState(
-//             {
-//                 name: '',
-//                 // File uploader : '', add these fields in when meta data is set up
-//             })
-//     // onSubmit handler
-//     const onSubmit =
-//         musicObject => {
-//             axios.post(
-// 'https://msrii21sj5.execute-api.us-east-1.amazonaws.com/test-invoke-stage/uploadMusicResource.aws.com',
-//                 musicObject)
-//                 .then(res => {
-//                     if (res.status === 200)
-//                         alert('File successfully uploaded')
-//                     else
-//                         Promise.reject()
-//                 })
-//                 .catch(err => alert('Something went wrong'))
-//         }
-//     // Return student form
-//     return (
-//         <MusicUploadForm initialValues={formValues}
-//             onSubmit={onSubmit}
-//             enableReinitialize>
-//             Upload Music
-//         </MusicUploadForm>
-//     )
-// }
-
-// // Export UploadMusicFile Component
-// export default UploadMusicFile

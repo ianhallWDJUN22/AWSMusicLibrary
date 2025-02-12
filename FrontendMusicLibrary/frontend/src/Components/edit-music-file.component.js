@@ -19,7 +19,7 @@ const EditMusicFile = (props) => {
     const onSubmit = (musicObject) => {
         axios
             .post( // Change from PUT to POST to match editLambda
-                "https://msrii21sj5.execute-api.us-east-1.amazonaws.com/test-invoke-stage/editMusicResource",
+                `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_EDIT_ENDPOINT}`,
                 {
                     oldFileName: props.match.params.id, // Original filename
                     newFileName: musicObject.name, // New filename entered
@@ -44,7 +44,7 @@ const EditMusicFile = (props) => {
     useEffect(() => {
         axios
             .get(
-"https://msrii21sj5.execute-api.us-east-1.amazonaws.com/test-invoke-stage/uploadMusicResource"
+`${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_UPLOAD_ENDPOINT}`
                 + props.match.params.id
             )
             .then((res) => {
