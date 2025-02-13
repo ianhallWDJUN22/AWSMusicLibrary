@@ -1,9 +1,5 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const client = new S3Client({ region: "us-east-1" });
 
@@ -24,24 +20,58 @@ export const handler = async (event: any): Promise<any> => {
     }
 
     const { eventType, fileName } = JSON.parse(event.body);
-    if (!fileName || !eventType) {
-      console.log("Missing required fields: fileName or eventType");
-      return { statusCode: 400, body: JSON.stringify({ message: "missing required fields" }) };
+
+    // Fetching all objects from the S3 bucket (list event type)
+    if (eventType === "list") {
+      const listObjectsCommand = new ListObjectsV2Command({
+        Bucket: bucketName,
+      });
+
+      const data = await client.send(listObjectsCommand);
+
+      // If there are no objects in the bucket
+      if (!data.Contents || data.Contents.length === 0) {
+        console.log("No objects found in the bucket");
+        return { statusCode: 200, body: JSON.stringify([]) };
+      }
+
+      // Create presigned URLs for each object
+      const musicFilesWithUrls = await Promise.all(
+        data.Contents.map(async (item) => {
+          const fileName = item.Key;
+          const command = new GetObjectCommand({ Bucket: bucketName, Key: fileName });
+          const presignedUrl = await getSignedUrl(client, command, { expiresIn: 15 * 60 }); // 15 minutes
+
+          return {
+            fileName: fileName,
+            downloadUrl: presignedUrl,
+          };
+        })
+      );
+
+      return {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*", // Replace "*" with your frontend URL in production
+          "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, x-api-key",
+        },
+        body: JSON.stringify(musicFilesWithUrls), // Returning list of music files with URLs
+      };
     }
 
-    console.log(`Event type: ${eventType}, File name: ${fileName}`);
-
+    // Handle other event types like 'upload' and 'get'
     const urlExpiration = 15 * 60; // 15 minutes (in seconds)
     let command;
 
     // Generate the presigned URL based on the event type
     switch (eventType) {
       case "get":
-        console.log("event type get detected");
+        console.log("event type 'get' detected");
         command = new GetObjectCommand({ Bucket: bucketName, Key: fileName });
         break;
       case "upload":
-        console.log("event type upload detected");
+        console.log("event type 'upload' detected");
         command = new PutObjectCommand({ Bucket: bucketName, Key: fileName });
         break;
       default:
@@ -59,7 +89,7 @@ export const handler = async (event: any): Promise<any> => {
     const presignedUrl = await getSignedUrl(client, command, { expiresIn: urlExpiration });
     if (!presignedUrl) {
       console.log("Presigned URL generation failed");
-      return { statusCode: 400, body: JSON.stringify({ message: "invalid event type" }) };
+      return { statusCode: 400, body: JSON.stringify({ message: "could not generate presigned URL" }) };
     }
 
     console.log("Successfully generated presigned URL");
@@ -71,7 +101,7 @@ export const handler = async (event: any): Promise<any> => {
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, x-api-key",
       },
-      body: JSON.stringify({ uploadUrl: presignedUrl, fileName })
+      body: JSON.stringify({ downloadUrl: presignedUrl, fileName })
     };
   } catch (error) {
     console.error("Error during Lambda execution:", error);

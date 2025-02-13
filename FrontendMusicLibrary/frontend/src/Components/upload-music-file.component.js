@@ -30,10 +30,10 @@ const UploadMusicFile = () => {
         }
       );
   
-      const { uploadUrl } = response.data;
+      const { downloadUrl } = response.data; // Changed this from 'uploadUrl' to 'downloadUrl'
   
       // Step 2: Upload the file to S3
-      await axios.put(uploadUrl, selectedFile, {
+      await axios.put(downloadUrl, selectedFile, {
         headers: { 
           "Content-Type": selectedFile.type || "audio/mpeg",
         },

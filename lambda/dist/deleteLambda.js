@@ -11,19 +11,34 @@ const handler = async (event) => {
     console.log(`delete lambda invoked for bucket: ${bucketName}`);
     console.log(`event body: ${JSON.stringify(event)}`);
     try {
-        if (!event.body) {
-            return { statusCode: 400, body: JSON.stringify({ message: "no file received" }) };
-        }
-        const { fileName } = JSON.parse(event.body);
+        //getting the file name from the event body
+        const fileName = event.queryStringParameters?.fileName;
         if (!fileName) {
             return { statusCode: 400, body: JSON.stringify({ message: "no file name received" }) };
         }
         await client.send(new client_s3_1.DeleteObjectCommand({ Bucket: bucketName, Key: fileName }));
-        return { statusCode: 200, body: JSON.stringify({ message: `File ${fileName} deleted successfully` }) };
+        console.log(`File ${fileName} deleted successfully`);
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // ✅ Important if frontend is making requests from localhost or other domains
+                "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, x-api-key",
+            },
+            body: JSON.stringify({ message: `File ${fileName} deleted successfully` }),
+        };
     }
     catch (error) {
-        console.error(error);
-        return { statusCode: 500, body: JSON.stringify({ error: "Could not delete file" }) };
+        console.error("Delete error:", error);
+        return {
+            statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, x-api-key",
+            },
+            body: JSON.stringify({ error: "Could not delete file" }),
+        };
     }
 };
 exports.handler = handler;

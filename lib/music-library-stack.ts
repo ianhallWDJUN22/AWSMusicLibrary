@@ -14,7 +14,11 @@ export class MusicLibraryStack extends cdk.Stack {
       cors: [
         {
           allowedOrigins: ["*"], // Change this to your frontend domain in production
-          allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET],
+          allowedMethods: [
+            s3.HttpMethods.PUT,
+            s3.HttpMethods.GET,
+            s3.HttpMethods.DELETE,
+          ],
           allowedHeaders: ["*"], // Adjust as needed
           exposedHeaders: ["ETag"], // Optional
         },
@@ -22,14 +26,18 @@ export class MusicLibraryStack extends cdk.Stack {
     });
 
     // Upload Lambda Function
-    const uploadMusicFunction = new lambda.Function(this, "UploadMusicFunction", {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset("lambda/dist"),
-      handler: "uploadLambda.handler",
-      environment: {
-        BUCKET_NAME: bucket.bucketName,
-      },
-    });
+    const uploadMusicFunction = new lambda.Function(
+      this,
+      "UploadMusicFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        code: lambda.Code.fromAsset("lambda/dist"),
+        handler: "uploadLambda.handler",
+        environment: {
+          BUCKET_NAME: bucket.bucketName,
+        },
+      }
+    );
 
     bucket.grantReadWrite(uploadMusicFunction);
 
@@ -46,14 +54,18 @@ export class MusicLibraryStack extends cdk.Stack {
     bucket.grantReadWrite(editMusicFunction);
 
     // Delete Lambda Function
-    const deleteMusicFunction = new lambda.Function(this, "DeleteMusicFunction", {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset("lambda"),
-      handler: "deleteLambda.handler",
-      environment: {
-        BUCKET_NAME: bucket.bucketName,
-      },
-    });
+    const deleteMusicFunction = new lambda.Function(
+      this,
+      "DeleteMusicFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        code: lambda.Code.fromAsset("lambda"),
+        handler: "deleteLambda.handler",
+        environment: {
+          BUCKET_NAME: bucket.bucketName,
+        },
+      }
+    );
 
     bucket.grantReadWrite(deleteMusicFunction);
 
@@ -84,91 +96,148 @@ export class MusicLibraryStack extends cdk.Stack {
     plan.addApiStage({ stage: api.deploymentStage });
 
     // === Upload Resource ===
-    const uploadLambdaIntegration = new apigateway.LambdaIntegration(uploadMusicFunction);
+    const uploadLambdaIntegration = new apigateway.LambdaIntegration(
+      uploadMusicFunction
+    );
     const uploadResource = api.root.addResource("uploadMusicResource");
-    uploadResource.addMethod("POST", uploadLambdaIntegration, { apiKeyRequired: true });
-
-    uploadResource.addMethod("OPTIONS", new apigateway.MockIntegration({
-      integrationResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": "'*'",
-          "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'",
-          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Api-Key'",
-        },
-      }],
-      passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-      requestTemplates: {
-        "application/json": "{\"statusCode\": 200}"
-      }
-    }), {
-      methodResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": true,
-          "method.response.header.Access-Control-Allow-Methods": true,
-          "method.response.header.Access-Control-Allow-Headers": true,
-        },
-      }],
+    uploadResource.addMethod("POST", uploadLambdaIntegration, {
+      apiKeyRequired: true,
     });
+
+    uploadResource.addMethod(
+      "OPTIONS",
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": "'*'",
+              "method.response.header.Access-Control-Allow-Methods":
+                "'POST,OPTIONS'",
+              "method.response.header.Access-Control-Allow-Headers":
+                "'Content-Type,X-Api-Key'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          "application/json": '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+        ],
+      }
+    );
 
     // === Edit Resource ===
-    const editLambdaIntegration = new apigateway.LambdaIntegration(editMusicFunction);
+    const editLambdaIntegration = new apigateway.LambdaIntegration(
+      editMusicFunction
+    );
     const editResource = api.root.addResource("editMusicResource");
-    editResource.addMethod("PUT", editLambdaIntegration, { apiKeyRequired: true });
-
-    editResource.addMethod("OPTIONS", new apigateway.MockIntegration({
-      integrationResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": "'*'",
-          "method.response.header.Access-Control-Allow-Methods": "'PUT,OPTIONS'",
-          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Api-Key'",
-        },
-      }],
-      passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-      requestTemplates: {
-        "application/json": "{\"statusCode\": 200}"
-      }
-    }), {
-      methodResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": true,
-          "method.response.header.Access-Control-Allow-Methods": true,
-          "method.response.header.Access-Control-Allow-Headers": true,
-        },
-      }],
+    editResource.addMethod("PUT", editLambdaIntegration, {
+      apiKeyRequired: true,
     });
+
+    editResource.addMethod(
+      "OPTIONS",
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": "'*'",
+              "method.response.header.Access-Control-Allow-Methods":
+                "'PUT,OPTIONS'",
+              "method.response.header.Access-Control-Allow-Headers":
+                "'Content-Type,X-Api-Key'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          "application/json": '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+        ],
+      }
+    );
 
     // === Delete Resource ===
-    const deleteLambdaIntegration = new apigateway.LambdaIntegration(deleteMusicFunction);
+    const deleteLambdaIntegration = new apigateway.LambdaIntegration(
+      deleteMusicFunction
+    );
     const deleteResource = api.root.addResource("deleteMusicResource");
-    deleteResource.addMethod("DELETE", deleteLambdaIntegration, { apiKeyRequired: true });
-
-    deleteResource.addMethod("OPTIONS", new apigateway.MockIntegration({
-      integrationResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": "'*'",
-          "method.response.header.Access-Control-Allow-Methods": "'DELETE,OPTIONS'",
-          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Api-Key'",
-        },
-      }],
-      passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-      requestTemplates: {
-        "application/json": "{\"statusCode\": 200}"
-      }
-    }), {
-      methodResponses: [{
-        statusCode: "200",
-        responseParameters: {
-          "method.response.header.Access-Control-Allow-Origin": true,
-          "method.response.header.Access-Control-Allow-Methods": true,
-          "method.response.header.Access-Control-Allow-Headers": true,
-        },
-      }],
+    deleteResource.addMethod("DELETE", deleteLambdaIntegration, {
+      apiKeyRequired: true,
     });
 
+    deleteResource.addMethod(
+      "OPTIONS",
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": "'*'",
+              "method.response.header.Access-Control-Allow-Methods":
+                "'DELETE,OPTIONS'",
+              "method.response.header.Access-Control-Allow-Headers":
+                "'Content-Type,X-Api-Key'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          "application/json": '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+          {
+            statusCode: "400",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+          {
+            statusCode: "500",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+        ],
+      }
+    );
   }
 }
