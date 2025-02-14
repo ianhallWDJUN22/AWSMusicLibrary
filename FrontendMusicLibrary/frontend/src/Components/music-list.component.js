@@ -5,14 +5,18 @@ import MusicTableRow from "./MusicTableRow.js";
 
 const MusicList = () => {
   const [music, setMusic] = useState([]);
-  const [loading, setLoading] = useState(true); // To show loading indicator while fetching
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetching list of files from S3 using the Lambda function (with eventType 'list')
+    fetchMusicList();
+  }, []);
+
+  // Fetch list of MP3 files from S3
+  const fetchMusicList = () => {
     axios
       .post(
         `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_UPLOAD_ENDPOINT}`,
-        { eventType: "list" }, // Requesting the list of files from Lambda
+        { eventType: "list" },
         {
           headers: {
             "x-api-key": process.env.REACT_APP_API_KEY,
@@ -21,33 +25,34 @@ const MusicList = () => {
         }
       )
       .then(({ data }) => {
-        // If data exists, update the state with the list of files and their presigned URLs
         setMusic(data);
-        setLoading(false); // Stop loading once data is received
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching music:", error);
-        setLoading(false); // Stop loading even if there's an error
+        setLoading(false);
       });
-  }, []);
+  };
+
+  // ✅ Function to remove a deleted file from the UI
+  const handleDeleteFile = (deletedFileName) => {
+    setMusic((prevMusic) => prevMusic.filter((file) => file.fileName !== deletedFileName));
+  };
 
   const playSong = (downloadUrl) => {
     const audio = new Audio(downloadUrl);
-    audio.play(); // Play the song directly using the presigned URL
+    audio.play();
   };
 
   return (
     <div className="table-wrapper">
-      <h2>Music List</h2>
+      <h2 className='music-list-header'>Music List</h2>
       {loading ? (
-        <p>Loading...</p> // Show loading text while fetching data
+        <p>Loading...</p>
       ) : (
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
+        <Table className='table-background' striped bordered hover>
+          <thead className='table-row-head'>
+          <tr></tr>
           </thead>
           <tbody>
             {music.length > 0 ? (
@@ -55,7 +60,8 @@ const MusicList = () => {
                 <MusicTableRow
                   obj={file}
                   key={file.fileName}
-                  playSong={() => playSong(file.downloadUrl)} // Pass playSong function to the row
+                  playSong={() => playSong(file.downloadUrl)}
+                  onDelete={handleDeleteFile} // ✅ Pass delete handler to MusicTableRow
                 />
               ))
             ) : (

@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormGroup, FormControl, Button } from "react-bootstrap";
 
 const MusicUploadForm = ({ onFileSelect, ...props }) => {
+  // Validation Schema: Ensures file is selected and file name exists
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .required("File name is required")
@@ -12,43 +13,45 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
         "File name contains characters that are not allowed"
       ),
     file: Yup.mixed()
-      .required("File is required")
-      .test("fileType", "Only MP3 files are allowed", (value) =>
-        value ? value.type === "audio/mpeg" : false
-      ),
+      .required("File selection is required")
+      .test("fileType", "Only MP3 files are allowed", (value) => {
+        return value instanceof File && value.type === "audio/mpeg";
+      }),
   });
 
   return (
-    <div className='form-wrapper'>
+    <div className="form-wrapper">
+      <h2 className="upload-header">Upload Music</h2>
       <Formik
-        initialValues={{ name: "", file: null }} // Tracks both name and file
+        initialValues={{ name: "", file: null }}
         validationSchema={validationSchema}
         {...props}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, values }) => (
           <Form>
             {/* File Name Field */}
-            <FormGroup>
+            <FormGroup className="upload-formgroup">
               <label>File Name</label>
               <Field
-                name='name'
-                type='text'
-                className='form-control'
-                placeholder='Enter file name'
+                name="name"
+                type="text"
+                className="form-control"
+                placeholder="Enter file name"
               />
               <ErrorMessage
-                name='name'
-                className='d-block invalid-feedback'
-                component='span'
+                name="name"
+                className="d-block invalid-feedback"
+                component="span"
               />
             </FormGroup>
 
             {/* File Upload Field */}
-            <FormGroup>
-              <label>Upload File</label>
+            <FormGroup className="upload-formgroup">
+              <label></label>
               <FormControl
-                type='file'
-                accept='.mp3'
+                id="fileInput"
+                type="file"
+                accept=".mp3"
                 onChange={(event) => {
                   const file = event.target.files[0];
                   if (file) {
@@ -60,15 +63,21 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
                 }}
               />
               <ErrorMessage
-                name='file'
-                className='d-block invalid-feedback'
-                component='span'
+                name="file"
+                className="d-block invalid-feedback"
+                component="span"
               />
             </FormGroup>
 
             {/* Submit Button */}
-            <Button variant='danger' size='lg' block='block' type='submit'>
-              {props.children}
+            <Button
+              className="button-upload"
+              variant="info"
+              size="lg"
+              block="block"
+              type="submit"
+            >
+              Upload
             </Button>
           </Form>
         )}
