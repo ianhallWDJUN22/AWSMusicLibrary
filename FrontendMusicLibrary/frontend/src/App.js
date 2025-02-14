@@ -17,7 +17,6 @@ import {
 
 // Import other React Component
 import UploadMusicFile from "./Components/upload-music-file.component";
-import EditMusicFile from "./Components/edit-music-file.component";
 import MusicList from "./Components/music-list.component";
 
 // App Component
@@ -59,7 +58,6 @@ const App = () => {
                                 <Routes>
                                     <Route path="/" element={<UploadMusicFile />} />
                                     <Route path="/upload-music-file" element={<UploadMusicFile />} />
-                                    <Route path="/edit-music-file/:id" element={<EditMusicFile />} />
                                     <Route path="/music-list" element={<MusicList />} />
                                 </Routes>
                             </div>

@@ -10,6 +10,8 @@ export class MusicLibraryStack extends cdk.Stack {
 
     const bucket = new s3.Bucket(this, "MusicUploadBucket", {
       versioned: true,
+      
+      // Solution for CORS issues when running app on localHost
       cors: [
         {
           allowedOrigins: ["*"],

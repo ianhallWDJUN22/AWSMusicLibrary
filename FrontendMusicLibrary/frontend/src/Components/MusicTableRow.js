@@ -1,60 +1,79 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, FormControl } from "react-bootstrap";
 import axios from "axios";
 
-const MusicTableRow = ({ obj, onDelete }) => {
+const MusicTableRow = ({ obj, onDelete, onRename }) => {
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newFileName, setNewFileName] = useState(obj.fileName);
+  const [error, setError] = useState("");
 
   const { fileName, downloadUrl } = obj;
 
-  // Handle "Play" button: Opens file in a new tab
   const handlePlay = () => {
     window.open(downloadUrl, "_blank");
   };
 
-  // Handle "Edit" button: Placeholder for future edit functionality
+  // Enables the editing mode
   const handleEdit = () => {
-    console.log(`Editing ${fileName}`);
+    setIsEditing(true);
+    setError(""); // Clear any previous errors
   };
 
-  // Handle "Delete" button: Calls DELETE Lambda via API Gateway
-  const handleDelete = async () => {
-    // Show confirmation prompt before proceeding
-    const userConfirmed = window.confirm(
-      `You are about to delete "${fileName}". Are you sure you want to continue?`
-    );
+  // Cancels editing and resets the file name
+  const handleCancel = () => {
+    setIsEditing(false);
+    setNewFileName(fileName);
+    setError("");
+  };
 
-    if (!userConfirmed) {
-      return; // Exit function if user cancels
+  // Handles renaming logic
+  const handleRename = async () => {
+    let formattedFileName = newFileName.trim();
+
+    if (!formattedFileName) {
+      setError("File name cannot be empty.");
+      return;
+    }
+
+    // Append .mp3 if it’s not already included
+    if (!formattedFileName.toLowerCase().endsWith(".mp3")) {
+      formattedFileName += ".mp3";
+    }
+
+    if (formattedFileName === fileName) {
+      handleCancel();
+      return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_DELETE_ENDPOINT}`,
+      const response = await axios.put(
+        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_EDIT_ENDPOINT}`,
+        {
+          oldFileName: fileName,
+          newFileName: formattedFileName,
+        },
         {
           headers: {
             "x-api-key": process.env.REACT_APP_API_KEY,
+            "Content-Type": "application/json",
           },
-          params: { fileName }, // Passes fileName as a query parameter to the API
         }
       );
 
-      console.log("Delete Response:", response.data);
-
-      // Trigger parent component's onDelete callback if provided
-      if (onDelete) {
-        onDelete(fileName);
+      if (response.status === 409) {
+        setError("A file with this name already exists. Choose a different name.");
+      } else {
+        console.log("Rename Response:", response.data);
+        if (onRename) {
+          onRename(fileName, formattedFileName);
+        }
+        setIsEditing(false);
       }
     } catch (err) {
-      console.error("Error deleting file:", err);
-
-      // Check if the error is a CORS issue (optional)
-      if (err.response) {
-        console.error("Response Error Data:", err.response.data);
-      }
-
-      alert("Could not delete the file.");
+      console.error("Error renaming file:", err);
+      alert("Could not rename the file.");
     } finally {
       setLoading(false);
     }
@@ -62,44 +81,81 @@ const MusicTableRow = ({ obj, onDelete }) => {
 
   return (
     <tr>
-      <td className='table-row-play-button'>
-       <div className='play-button-wrapper'>
-        <Button
-          className='play-button action-button'
-          variant='info'
-          onClick={handlePlay}
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Play"}
-        </Button>
-       </div>
+      <td className="table-row-play-button">
+        <div className="play-button-wrapper">
+          <Button
+            className="play-button action-button"
+            variant="info"
+            onClick={handlePlay}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Play"}
+          </Button>
+        </div>
       </td>
       <td>
-        <div className='list-table-left'>
-          <div className='list-name-wrapper'>
-            <div className='list-file-name'>{fileName}</div>
+        <div className="list-table-left">
+          <div className="list-name-wrapper">
+            {isEditing ? (
+              <div className="edit-input-wrapper">
+                <FormControl
+                  type="text"
+                  className="edit-input"
+                  value={newFileName}
+                  onChange={(e) => setNewFileName(e.target.value)}
+                  autoFocus
+                />
+                {error && <span className="error-message">{error}</span>}
+              </div>
+            ) : (
+              <div className="list-file-name">{fileName}</div>
+            )}
           </div>
         </div>
       </td>
 
       <td>
-        <div className='action-button-group'>
-          <Button
-            className='edit-button action-button'
-            variant='warning'
-            onClick={handleEdit}
-            disabled={loading}
-          >
-            Edit
-          </Button>
-          <Button
-            className='delete-button action-button'
-            variant='danger'
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            Delete
-          </Button>
+        <div className="action-button-group">
+          {!isEditing && (
+            <Button
+              className="edit-button action-button"
+              variant="warning"
+              onClick={handleEdit}
+              disabled={loading}
+            >
+              Edit
+            </Button>
+          )}
+          {!isEditing && (
+            <Button
+              className="delete-button action-button"
+              variant="danger"
+              onClick={() => onDelete(fileName)}
+              disabled={loading}
+            >
+              Delete
+            </Button>
+          )}
+          {isEditing && (
+           <>
+              <Button
+                className="submit-edit-button action-button"
+                variant="success"
+                onClick={handleRename}
+                disabled={loading}
+              >
+                Submit
+              </Button>
+              <Button
+                className="cancel-edit-button action-button"
+                variant="secondary"
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              </>
+          )}
         </div>
       </td>
     </tr>

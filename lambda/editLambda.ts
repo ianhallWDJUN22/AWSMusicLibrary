@@ -1,4 +1,4 @@
-import { S3Client, CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, CopyObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
 const client = new S3Client({ region: "us-east-1" });
 
@@ -13,30 +13,48 @@ export const handler = async (event: any): Promise<any> => {
 
   try {
     if (!event.body) {
-      return { statusCode: 400, body: JSON.stringify({ message: "no file data received" }) };
+      return { statusCode: 400, body: JSON.stringify({ message: "No file data received" }) };
     }
 
     const { oldFileName, newFileName } = JSON.parse(event.body);
     if (!oldFileName || !newFileName) {
-      return { statusCode: 400, body: JSON.stringify({ message: "missing file names" }) };
+      return { statusCode: 400, body: JSON.stringify({ message: "Missing file names" }) };
     }
 
-    // Copy the old file to the new file name
+    // Step 1: Check if the new filename already exists
+    const listCommand = new ListObjectsV2Command({
+      Bucket: bucketName,
+      Prefix: newFileName,
+    });
+
+    const existingFiles = await client.send(listCommand);
+    if (existingFiles.Contents && existingFiles.Contents.length > 0) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ message: "File with this name already exists" }),
+      };
+    }
+
+    // Step 2: Rename file
     await client.send(new CopyObjectCommand({
       Bucket: bucketName,
       CopySource: `${bucketName}/${oldFileName}`,
       Key: newFileName,
     }));
 
-    // Delete the old file
     await client.send(new DeleteObjectCommand({
       Bucket: bucketName,
       Key: oldFileName,
     }));
 
-    return { statusCode: 200, body: JSON.stringify({ message: `Renamed ${oldFileName} to ${newFileName}` }) };
+    return {
+      statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ message: `Renamed ${oldFileName} to ${newFileName}` }),
+    };
   } catch (error) {
     console.error(error);
     return { statusCode: 500, body: JSON.stringify({ error: "Could not rename file" }) };
   }
 };
+

@@ -12,24 +12,39 @@ const handler = async (event) => {
     console.log(`event body: ${JSON.stringify(event)}`);
     try {
         if (!event.body) {
-            return { statusCode: 400, body: JSON.stringify({ message: "no file data received" }) };
+            return { statusCode: 400, body: JSON.stringify({ message: "No file data received" }) };
         }
         const { oldFileName, newFileName } = JSON.parse(event.body);
         if (!oldFileName || !newFileName) {
-            return { statusCode: 400, body: JSON.stringify({ message: "missing file names" }) };
+            return { statusCode: 400, body: JSON.stringify({ message: "Missing file names" }) };
         }
-        // Copy the old file to the new file name
+        // Step 1: Check if the new filename already exists
+        const listCommand = new client_s3_1.ListObjectsV2Command({
+            Bucket: bucketName,
+            Prefix: newFileName,
+        });
+        const existingFiles = await client.send(listCommand);
+        if (existingFiles.Contents && existingFiles.Contents.length > 0) {
+            return {
+                statusCode: 409,
+                body: JSON.stringify({ message: "File with this name already exists" }),
+            };
+        }
+        // Step 2: Rename file
         await client.send(new client_s3_1.CopyObjectCommand({
             Bucket: bucketName,
             CopySource: `${bucketName}/${oldFileName}`,
             Key: newFileName,
         }));
-        // Delete the old file
         await client.send(new client_s3_1.DeleteObjectCommand({
             Bucket: bucketName,
             Key: oldFileName,
         }));
-        return { statusCode: 200, body: JSON.stringify({ message: `Renamed ${oldFileName} to ${newFileName}` }) };
+        return {
+            statusCode: 200,
+            headers: { "Access-Control-Allow-Origin": "*" },
+            body: JSON.stringify({ message: `Renamed ${oldFileName} to ${newFileName}` }),
+        };
     }
     catch (error) {
         console.error(error);

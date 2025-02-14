@@ -25,6 +25,9 @@ body h3 {
 
 
 /* upload-music-file.component and MusicUploadForm styles */
+.upload-form-group {
+  margin-top: 15px;
+}
 
 .upload-header {
   margin-bottom: 10%;
@@ -37,9 +40,9 @@ body h3 {
   padding-left: 18px;
   padding-right: 18px;
   min-width: 70px;
-  background-color:rgb(105, 205, 242);
-  border-color:rgb(24, 134, 182);
-  color: rgb(9, 19, 36);
+  background-color:rgb(83, 171, 243);
+  border-color:rgb(43, 140, 159);
+  color: rgb(0, 24, 65);
   font-weight: 600;
   font-size: 17px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
@@ -61,18 +64,16 @@ label {
 /* music-list.component and MusicTableRow styles: */
 
 .music-list-header {
-  margin-bottom: 24px;
-  padding-left: 21.5%; 
+  margin-bottom: 45px;
+  margin-left: 3px;
   margin-top: 10%;
+  font-size: 30px;
 }
 
 .table-row-head {
   display: block;
-  background-color:rgb(36, 60, 81);
-  min-height: 20px;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+  background-color:rgb(30, 42, 53);
+  min-height: 45px;
 }
 
 .list-table-left {
@@ -81,7 +82,7 @@ label {
 }
 
 .table-background {
-  background-color:rgb(36, 60, 81);
+  background-color:rgb(30, 42, 53);
   border-width: 1px;
   border-color: rgb(156, 170, 182);
 }
@@ -124,7 +125,7 @@ label {
 
 .play-button {
  min-width: 70px;
- margin-top: 5px;
+ margin-top: 4px;
  background-color:rgb(14, 191, 255);
  border-color:rgb(42, 164, 216);
  color: rgb(43, 52, 66);
@@ -141,8 +142,8 @@ label {
 
 .edit-button { 
   min-width: 65px;
-  background-color:rgb(253, 203, 51);
-  border-color:rgb(226, 185, 35);
+  background-color:rgb(215, 248, 255);
+  border-color:rgb(137, 182, 192);
   color: rgb(20, 24, 40);
   font-weight: 600;
   font-size: 12px;
@@ -151,8 +152,8 @@ label {
 }
 
 .edit-button:hover {
-  background-color:rgb(255, 233, 65);
-  border-color:rgb(237, 197, 54);
+  background-color:rgb(131, 222, 243);
+  border-color:rgb(125, 166, 175);
   color: rgb(12, 28, 42);
 }
 
@@ -168,6 +169,26 @@ label {
 .delete-button:hover {
  background-color: rgb(255, 67, 67);
  color: rgb(235, 235, 235);
+}
+
+.edit-button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.submit-edit-button {
+  min-width: 65px;
+  font-weight: 600;
+  font-size: 10px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.cancel-edit-button {
+  min-width: 65px;
+  font-weight: 600;
+  font-size: 10px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
 /* Chrome, Safari, Edge, Opera */

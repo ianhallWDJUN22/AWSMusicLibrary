@@ -11,7 +11,6 @@ const MusicList = () => {
     fetchMusicList();
   }, []);
 
-  // Fetch list of MP3 files from S3
   const fetchMusicList = () => {
     axios
       .post(
@@ -34,25 +33,27 @@ const MusicList = () => {
       });
   };
 
-  // ✅ Function to remove a deleted file from the UI
   const handleDeleteFile = (deletedFileName) => {
     setMusic((prevMusic) => prevMusic.filter((file) => file.fileName !== deletedFileName));
   };
 
-  const playSong = (downloadUrl) => {
-    const audio = new Audio(downloadUrl);
-    audio.play();
+  const handleRenameFile = (oldFileName, newFileName) => {
+    setMusic((prevMusic) =>
+      prevMusic.map((file) =>
+        file.fileName === oldFileName ? { ...file, fileName: newFileName } : file
+      )
+    );
   };
 
   return (
     <div className="table-wrapper">
-      <h2 className='music-list-header'>Music List</h2>
+      <h2 className="music-list-header">Music List</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <Table className='table-background' striped bordered hover>
-          <thead className='table-row-head'>
-          <tr></tr>
+        <Table className="table-background" striped bordered hover>
+          <thead className="table-row-head">
+            <tr></tr>
           </thead>
           <tbody>
             {music.length > 0 ? (
@@ -60,13 +61,13 @@ const MusicList = () => {
                 <MusicTableRow
                   obj={file}
                   key={file.fileName}
-                  playSong={() => playSong(file.downloadUrl)}
-                  onDelete={handleDeleteFile} // ✅ Pass delete handler to MusicTableRow
+                  onDelete={handleDeleteFile}
+                  onRename={handleRenameFile}
                 />
               ))
             ) : (
               <tr>
-                <td colSpan="2">No files found</td>
+                <td colSpan="3">No files found</td>
               </tr>
             )}
           </tbody>

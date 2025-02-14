@@ -3,8 +3,10 @@ import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormGroup, FormControl, Button } from "react-bootstrap";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
 const MusicUploadForm = ({ onFileSelect, ...props }) => {
-  // Validation Schema: Ensures file is selected and file name exists
+  // Validation Schema: Ensures file is selected, correct type, and within size limit
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .required("File name is required")
@@ -16,6 +18,9 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
       .required("File selection is required")
       .test("fileType", "Only MP3 files are allowed", (value) => {
         return value instanceof File && value.type === "audio/mpeg";
+      })
+      .test("fileSize", `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`, (value) => {
+        return value instanceof File && value.size <= MAX_FILE_SIZE;
       }),
   });
 
@@ -27,10 +32,10 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
         validationSchema={validationSchema}
         {...props}
       >
-        {({ setFieldValue, values }) => (
+        {({ setFieldValue }) => (
           <Form>
             {/* File Name Field */}
-            <FormGroup className="upload-formgroup">
+            <FormGroup className="upload-form-group">
               <label>File Name</label>
               <Field
                 name="name"
@@ -46,8 +51,8 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
             </FormGroup>
 
             {/* File Upload Field */}
-            <FormGroup className="upload-formgroup">
-              <label></label>
+            <FormGroup className="upload-form-group">
+              <label>Upload File (Max: 10MB)</label>
               <FormControl
                 id="fileInput"
                 type="file"
@@ -57,6 +62,7 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
                   if (file) {
                     console.log("Selected File:", file);
                     console.log("Detected MIME Type:", file.type);
+                    console.log("File Size (MB):", (file.size / 1024 / 1024).toFixed(2));
                     onFileSelect(file);
                     setFieldValue("file", file);
                   }
@@ -87,3 +93,4 @@ const MusicUploadForm = ({ onFileSelect, ...props }) => {
 };
 
 export default MusicUploadForm;
+
