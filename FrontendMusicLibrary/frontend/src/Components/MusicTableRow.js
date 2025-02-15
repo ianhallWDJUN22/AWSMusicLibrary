@@ -79,6 +79,34 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
     }
   };
 
+  // Handles deletion confirmation and API request
+  const handleDelete = async () => {
+    const userConfirmed = window.confirm(
+      `You are about to delete "${fileName}". Are you sure you want to continue?`
+    );
+
+    if (!userConfirmed) return;
+
+    setLoading(true);
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_DELETE_ENDPOINT}`,
+        {
+          headers: { "x-api-key": process.env.REACT_APP_API_KEY },
+          params: { fileName },
+        }
+      );
+
+      console.log("File deleted successfully.");
+      onDelete(fileName);
+    } catch (err) {
+      console.error("Error deleting file:", err);
+      alert("Could not delete the file.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <tr>
       <td className="table-row-play-button">
@@ -130,7 +158,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
             <Button
               className="delete-button action-button"
               variant="danger"
-              onClick={() => onDelete(fileName)}
+              onClick={handleDelete}
               disabled={loading}
             >
               Delete
@@ -163,3 +191,4 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
 };
 
 export default MusicTableRow;
+

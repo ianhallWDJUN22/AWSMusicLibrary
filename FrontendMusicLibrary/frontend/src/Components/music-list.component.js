@@ -33,8 +33,9 @@ const MusicList = () => {
       });
   };
 
-  const handleDeleteFile = (deletedFileName) => {
-    setMusic((prevMusic) => prevMusic.filter((file) => file.fileName !== deletedFileName));
+  // Ensures file is actually deleted from S3 before updating UI
+  const handleDeleteFile = async (fileName) => {
+    setMusic((prevMusic) => prevMusic.filter((file) => file.fileName !== fileName));
   };
 
   const handleRenameFile = (oldFileName, newFileName) => {
