@@ -126,13 +126,16 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
           <div className="list-name-wrapper">
             {isEditing ? (
               <div className="edit-input-wrapper">
+              <label>
                 <FormControl
+                  id="rename-input"
                   type="text"
                   className="edit-input"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
                   autoFocus
                 />
+                </label>
                 {error && <span className="error-message">{error}</span>}
               </div>
             ) : (
@@ -146,7 +149,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
         <div className="action-button-group">
           {!isEditing && (
             <Button
-              className="edit-button action-button"
+              className="edit-button"
               variant="warning"
               onClick={handleEdit}
               disabled={loading}
@@ -156,7 +159,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
           )}
           {!isEditing && (
             <Button
-              className="delete-button action-button"
+              className="delete-button"
               variant="danger"
               onClick={handleDelete}
               disabled={loading}
@@ -167,7 +170,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
           {isEditing && (
            <>
               <Button
-                className="submit-edit-button action-button"
+                className="submit-edit-button"
                 variant="success"
                 onClick={handleRename}
                 disabled={loading}
@@ -175,7 +178,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
                 Submit
               </Button>
               <Button
-                className="cancel-edit-button action-button"
+                className="cancel-edit-button"
                 variant="secondary"
                 onClick={handleCancel}
                 disabled={loading}

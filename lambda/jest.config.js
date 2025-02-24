@@ -1,16 +1,17 @@
 module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
-  testMatch: ['**/test/**/*.[jt]s?(x)'],
+  testMatch: ['**/*.test.ts'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
-
+  
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    'lambda/**/*.ts',       
-    '!lambda/**/*.d.ts'
+    'lib/**/*.ts',
+    '!lib/**/*.d.ts'
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
 };
+
