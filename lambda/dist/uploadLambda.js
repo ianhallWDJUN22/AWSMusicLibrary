@@ -15,21 +15,13 @@ const handler = async (event) => {
     console.log(`Event body: ${JSON.stringify(event)}`);
     try {
         if (!event.body) {
-            console.log("No file received in the event body");
-            return createErrorResponse(400, "No file received");
+            return createErrorResponse(400, "No file data received");
         }
-        const { eventType, fileName } = JSON.parse(event.body);
-        switch (eventType) {
-            case "list":
-                return await listFiles(bucketName);
-            case "upload":
-                return await handleUpload(bucketName, fileName);
-            case "get":
-                return await generatePresignedGetUrl(bucketName, fileName);
-            default:
-                console.log(`Invalid event type: ${eventType}`);
-                return createErrorResponse(400, "Invalid event type");
+        const { fileName } = JSON.parse(event.body);
+        if (!fileName) {
+            return createErrorResponse(400, "File name is required");
         }
+        return await handleUpload(bucketName, fileName);
     }
     catch (error) {
         console.error("Error during Lambda execution:", error);
@@ -37,28 +29,6 @@ const handler = async (event) => {
     }
 };
 exports.handler = handler;
-/**
- * Retrieves a list of files from the S3 bucket with presigned URLs.
- */
-const listFiles = async (bucketName) => {
-    console.log("Fetching list of files from S3 bucket...");
-    const listObjectsCommand = new client_s3_1.ListObjectsV2Command({ Bucket: bucketName });
-    const data = await client.send(listObjectsCommand);
-    if (!data.Contents || data.Contents.length === 0) {
-        console.log("No files found in the bucket.");
-        return createSuccessResponse([]);
-    }
-    // Generate presigned URLs for all files
-    const musicFilesWithUrls = await Promise.all(data.Contents.map(async (item) => {
-        const command = new client_s3_1.GetObjectCommand({ Bucket: bucketName, Key: item.Key });
-        const presignedUrl = await (0, s3_request_presigner_1.getSignedUrl)(client, command, { expiresIn: 15 * 60 });
-        return {
-            fileName: item.Key,
-            downloadUrl: presignedUrl,
-        };
-    }));
-    return createSuccessResponse(musicFilesWithUrls);
-};
 /**
  * Handles file upload by checking for duplicates and generating a presigned upload URL.
  */
@@ -73,15 +43,6 @@ const handleUpload = async (bucketName, fileName) => {
     console.log(`File ${fileName} does not exist, generating presigned upload URL...`);
     const uploadCommand = new client_s3_1.PutObjectCommand({ Bucket: bucketName, Key: fileName });
     const presignedUrl = await (0, s3_request_presigner_1.getSignedUrl)(client, uploadCommand, { expiresIn: 15 * 60 });
-    return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
-};
-/**
- * Generates a presigned URL for retrieving a file from S3.
- */
-const generatePresignedGetUrl = async (bucketName, fileName) => {
-    console.log(`Generating presigned GET URL for file: ${fileName}`);
-    const getCommand = new client_s3_1.GetObjectCommand({ Bucket: bucketName, Key: fileName });
-    const presignedUrl = await (0, s3_request_presigner_1.getSignedUrl)(client, getCommand, { expiresIn: 15 * 60 });
     return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
 /**

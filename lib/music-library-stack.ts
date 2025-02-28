@@ -11,7 +11,7 @@ export class MusicLibraryStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, "MusicUploadBucket", {
       versioned: true,
       
-      // Solution for CORS issues when running app on localHost
+      // Solution for CORS issues when running app on localhost
       cors: [
         {
           allowedOrigins: ["*"],
@@ -33,6 +33,13 @@ export class MusicLibraryStack extends cdk.Stack {
       environment: { BUCKET_NAME: bucket.bucketName },
     });
 
+    const getMusicFunction = new lambda.Function(this, "GetMusicFunction", {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset("lambda/dist"),
+      handler: "getLambda.handler",
+      environment: { BUCKET_NAME: bucket.bucketName },
+    });
+
     const editMusicFunction = new lambda.Function(this, "EditMusicFunction", {
       runtime: lambda.Runtime.NODEJS_20_X,
       code: lambda.Code.fromAsset("lambda/dist"),
@@ -47,7 +54,9 @@ export class MusicLibraryStack extends cdk.Stack {
       environment: { BUCKET_NAME: bucket.bucketName },
     });
 
+    // Grant S3 access
     bucket.grantReadWrite(uploadMusicFunction);
+    bucket.grantRead(getMusicFunction);
     bucket.grantReadWrite(editMusicFunction);
     bucket.grantReadWrite(deleteMusicFunction);
 
@@ -78,6 +87,9 @@ export class MusicLibraryStack extends cdk.Stack {
     const uploadResource = api.root.addResource("uploadMusicResource");
     uploadResource.addMethod("POST", new apigateway.LambdaIntegration(uploadMusicFunction), { apiKeyRequired: true });
 
+    const getMusicResource = api.root.addResource("getMusicResource");
+    getMusicResource.addMethod("GET", new apigateway.LambdaIntegration(getMusicFunction), { apiKeyRequired: true });
+
     const editResource = api.root.addResource("editMusicResource");
     editResource.addMethod("PUT", new apigateway.LambdaIntegration(editMusicFunction), { apiKeyRequired: true });
 
@@ -85,4 +97,3 @@ export class MusicLibraryStack extends cdk.Stack {
     deleteResource.addMethod("DELETE", new apigateway.LambdaIntegration(deleteMusicFunction), { apiKeyRequired: true });
   }
 }
-

@@ -13,9 +13,8 @@ const MusicList = () => {
 
   const fetchMusicList = () => {
     axios
-      .post(
-        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_UPLOAD_ENDPOINT}`,
-        { eventType: "list" },
+      .get(
+        `${process.env.REACT_APP_INVOCATION_BASE_URL}/${process.env.REACT_APP_AWS_ENV}/${process.env.REACT_APP_GET_ENDPOINT}`,
         {
           headers: {
             "x-api-key": process.env.REACT_APP_API_KEY,
