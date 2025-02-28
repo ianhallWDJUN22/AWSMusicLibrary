@@ -45,6 +45,9 @@ This project is structured with AWS Lambda functions handling different aspects 
 
 ## Architecture Overview  
 
+![Alt Text](images/dataflowScreenshot.png)
+
+
 ### **Frontend**  
 - React-based UI for file management.  
 
@@ -134,6 +137,8 @@ npm test
 ## Coverage  
 
 This project includes **22 Jest test cases** covering all Lambda functions, ensuring reliability by testing success cases, failures, and edge cases. **All tests are passing**, keeping the system stable and ready for future updates.  
+
+![Alt Text](images/coverageScreenshot.png)
 
 ---
 
