@@ -107,9 +107,13 @@ The following API Gateway endpoints are available:
 
 **Note:** API requests require an API key, which must be included in the headers.  
 
----
+--- 
 
-## Testing  
+## Test Coverage  
+
+This project includes **22 Jest test cases** covering all Lambda functions, ensuring reliability by testing success cases, failures, and edge cases. **All tests are passing**, keeping the system stable and ready for future updates.  
+
+![Alt Text](images/coverageScreenshot.png)
 
 ### **Run Jest Unit Tests**  
 ```sh
@@ -117,14 +121,6 @@ npm test
 ```
 
 **Note:** All tests are written in Jest and cover Lambda function logic, including S3 interactions.  
-
----
-
-## Coverage  
-
-This project includes **22 Jest test cases** covering all Lambda functions, ensuring reliability by testing success cases, failures, and edge cases. **All tests are passing**, keeping the system stable and ready for future updates.  
-
-![Alt Text](images/coverageScreenshot.png)
 
 ---
 
