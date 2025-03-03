@@ -137,14 +137,14 @@ aws logs tail /aws/lambda/your-lambda-function-name --follow
 
 ---
 
-## Next version Roadmap  
+## Roadmap
 
+### **Next Version:**
 - **User Authentication**: Implement authentication for API requests and private music libraries.  
-- **Database Integration**: Store metadata (e.g., upload date, user info) in DynamoDB.  
+- **Database Integration**: Store metadata (e.g. file names, upload date, user info) in DynamoDB.  
 - **Optimized Presigned URL Generation**: Modify presigned URL generation to be triggered only when requested, improving efficiency and URL validity for playback, editing, and deletion.
 
-## Long-term Roadmap
-
+### **Long-term:**
 - **Synced Annotation**: Implement a timestamp-based annotation system that enables users to add and view time-synced notes for audio files.
 - **Collaborative Workspaces**: Enable shared access to audio file libraries, allowing multiple users to manage and interact with the same set of files within a workspace.
 - **Shared Annotations**: Extend the synced annotation system to support real-time collaboration, allowing multiple users to view, add, and edit timestamped notes on shared audio files.
