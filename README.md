@@ -1,6 +1,6 @@
 # Music Library Service  
 
-The **Music Library Service** is a serverless application designed to manage MP3 file uploads, retrievals, renaming, and deletions using **AWS Lambda**, **S3**, and **API Gateway**. The infrastructure is built with the **AWS Cloud Development Kit (CDK)**, ensuring an **Infrastructure-as-Code (IaC)** approach for scalable deployment.  
+This **Music Library Service** is a serverless application designed to manage MP3 file uploads, retrievals, renaming, and deletions using **AWS Lambda**, **S3**, and **API Gateway**. The infrastructure is built with the **AWS Cloud Development Kit (CDK)**, ensuring an **Infrastructure-as-Code (IaC)** approach for scalable deployment.  
 
 ---
 
@@ -15,6 +15,24 @@ The **Music Library Service** is a serverless application designed to manage MP3
 - **Scalable and Serverless**: Built using AWS Lambda and API Gateway for a highly available system.  
 - **Infrastructure as Code (IaC)**: Defined using AWS CDK for easy deployment and management.  
 - **Comprehensive Testing**: All Lambda functions have unit tests using Jest.  
+
+---
+
+## Architecture Overview  
+
+
+### **Frontend**  
+- React-based UI for file management.  
+
+### **Backend**  
+- AWS Lambda functions, API Gateway, and S3.  
+
+### **Infrastructure**  
+- AWS CDK for defining and deploying resources.  
+
+---
+
+![Alt Text](images/dataflowScreenshot.png)
 
 ---
 
@@ -40,38 +58,6 @@ This project is structured with AWS Lambda functions handling different aspects 
 - Handles the deletion of MP3 files from S3.  
 - Ensures proper error handling in case of S3 failures.  
 - Implements confirmation handling on the frontend to prevent accidental deletions.  
-
----
-
-## Architecture Overview  
-
-![Alt Text](images/dataflowScreenshot.png)
-
-
-### **Frontend**  
-- React-based UI for file management.  
-
-### **Backend**  
-- AWS Lambda functions, API Gateway, and S3.  
-
-### **Infrastructure**  
-- AWS CDK for defining and deploying resources.  
-
-### **Workflow**  
-
-#### **Upload a File:**  
-1. Frontend requests a presigned URL.  
-2. Uploads the file directly to S3.  
-
-#### **Retrieve or List Files:**  
-1. Frontend calls the API Gateway endpoint.  
-2. **GetLambda** responds with either a single presigned URL or a list of MP3 files.  
-
-#### **Rename a File:**  
-1. **EditLambda** checks for duplicates and renames the file in S3.  
-
-#### **Delete a File:**  
-1. **DeleteLambda** removes the file from S3 upon confirmation.  
 
 ---
 
@@ -170,7 +156,7 @@ aws logs tail /aws/lambda/your-lambda-function-name --follow
 * `./buildscript.sh` view buildscript.sh file to see the list of commands this will run
 * `npm run build`   compile typescript to js
 * `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
+* `npm test`        perform the jest unit tests
 
 - From the 'frontend' directory ({root-directory}/FrontendMusicLibrary/frontend):
 
