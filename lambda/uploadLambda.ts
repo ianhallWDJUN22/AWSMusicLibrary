@@ -31,9 +31,8 @@ export const handler = async (event: any): Promise<any> => {
   }
 };
 
-/**
- * Handles file upload by checking for duplicates and generating a presigned upload URL.
- */
+
+// Handles file upload by checking for duplicates and generating a presigned upload URL.
 const handleUpload = async (bucketName: string, fileName: string) => {
   console.log(`Checking if file ${fileName} already exists...`);
 
@@ -52,9 +51,8 @@ const handleUpload = async (bucketName: string, fileName: string) => {
   return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
 
-/**
- * Utility function to create a success response with CORS headers.
- */
+
+// Utility function to create a success response with CORS headers.
 const createSuccessResponse = (body: any) => ({
   statusCode: 200,
   headers: {
@@ -65,9 +63,8 @@ const createSuccessResponse = (body: any) => ({
   body: JSON.stringify(body),
 });
 
-/**
- * Utility function to create an error response with CORS headers.
- */
+
+// Utility function to create an error response with CORS headers.
 const createErrorResponse = (statusCode: number, message: string) => ({
   statusCode,
   headers: {

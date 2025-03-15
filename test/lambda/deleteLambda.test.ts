@@ -2,7 +2,6 @@ import { handler } from '../../lambda/deleteLambda';
 
 const mockSend = jest.fn();
 
-// Jest mock AWS SDK clients correctly using Jest factory functions
 jest.mock('@aws-sdk/client-s3', () => {
   const original = jest.requireActual('@aws-sdk/client-s3');
   return {

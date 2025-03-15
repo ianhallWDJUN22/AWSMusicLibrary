@@ -17,7 +17,7 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
   // Enables the editing mode
   const handleEdit = () => {
     setIsEditing(true);
-    setError(""); // Clear any previous errors
+    setError("");
   };
 
   // Cancels editing and resets the file name

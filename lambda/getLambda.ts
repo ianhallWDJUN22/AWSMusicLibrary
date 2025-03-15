@@ -29,9 +29,7 @@ export const handler = async (event: any): Promise<any> => {
   }
 };
 
-/**
- * Retrieves a list of files from the S3 bucket with presigned URLs.
- */
+// Retrieves a list of files from the S3 bucket with presigned URLs.
 const listFiles = async (bucketName: string) => {
   console.log("Fetching list of files from S3 bucket...");
 
@@ -59,9 +57,8 @@ const listFiles = async (bucketName: string) => {
   return createSuccessResponse(musicFilesWithUrls);
 };
 
-/**
- * Generates a presigned URL for retrieving just one file from S3.
- */
+
+// Generates a presigned URL for retrieving just one file from S3.
 const generatePresignedGetUrl = async (bucketName: string, fileName: string) => {
   console.log(`Generating presigned GET URL for file: ${fileName}`);
   const getCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileName });
@@ -70,9 +67,7 @@ const generatePresignedGetUrl = async (bucketName: string, fileName: string) => 
   return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
 
-/**
- * Utility function to create a success response with CORS headers.
- */
+ // Utility function to create a success response with CORS headers.
 const createSuccessResponse = (body: any) => ({
   statusCode: 200,
   headers: {
@@ -83,9 +78,8 @@ const createSuccessResponse = (body: any) => ({
   body: JSON.stringify(body),
 });
 
-/**
- * Utility function to create an error response with CORS headers.
- */
+
+// Utility function to create an error response with CORS headers.
 const createErrorResponse = (statusCode: number, message: string) => ({
   statusCode,
   headers: {

@@ -4,9 +4,9 @@ import MusicUploadForm from "./MusicUploadForm.js";
 
 const UploadMusicFile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(false); // Track upload progress
-  const [error, setError] = useState(""); // Error message state
-  const [successMessage, setSuccessMessage] = useState(""); // Success message state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const onSubmit = async (musicObject, { resetForm }) => {
     if (!selectedFile) {
@@ -14,9 +14,9 @@ const UploadMusicFile = () => {
       return;
     }
 
-    setLoading(true); // Show loading message
-    setError(""); // Reset previous error
-    setSuccessMessage(""); // Reset success message
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
 
     try {
       // Ensure the filename ends in .mp3
@@ -36,33 +36,33 @@ const UploadMusicFile = () => {
             "Content-Type": "application/json",
             "x-api-key": process.env.REACT_APP_API_KEY,
           },
-          validateStatus: (status) => status < 500, // Allow handling 409 error properly
+          validateStatus: (status) => status < 500,
         }
       );
 
-      // ✅ Handle duplicate file error
+      // Handle duplicate file error
       if (response.status === 409) {
         setError("A file with this name already exists. Please choose a different name.");
         setLoading(false);
         return;
       }
 
-      const { downloadUrl } = response.data; // Extract the presigned URL
+      const { downloadUrl } = response.data;
 
       // Step 2: Upload the file to S3
       await axios.put(downloadUrl, selectedFile, {
         headers: {
           "Content-Type": selectedFile.type || "audio/mpeg",
         },
-        transformRequest: [(data) => data], // Ensures the file is uploaded correctly
+        transformRequest: [(data) => data],
       });
 
-      setSuccessMessage("File successfully uploaded!  Vist the Music List page to listen to your songs"); // Show success message
+      setSuccessMessage("File successfully uploaded!  Vist the Music List page to listen to your songs"); 
 
-      // ✅ Reset form fields **only** after successful upload
+      // Reset form fields after successful upload
       setSelectedFile(null);
-      resetForm(); // Reset form input fields
-      document.getElementById("fileInput").value = ""; // Reset file input field
+      resetForm();
+      document.getElementById("fileInput").value = "";
     } catch (err) {
       console.error("Upload error:", err);
       setError("Something went wrong: " + (err.response?.data?.message || err.message));
@@ -78,7 +78,7 @@ const UploadMusicFile = () => {
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>} {/* Show success message */}
       
       <MusicUploadForm
-        initialValues={{ name: "", file: null }} // Ensure the initial file state is null
+        initialValues={{ name: "", file: null }}
         onSubmit={onSubmit}
         onFileSelect={setSelectedFile}
         enableReinitialize

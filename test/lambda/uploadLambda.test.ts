@@ -1,11 +1,9 @@
 import { handler } from "../../lambda/uploadLambda";
 import { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
 
-// Declare mockSend at the top-level with a Jest mock
 const mockSend = jest.fn();
 const mockGetSignedUrl = jest.fn().mockResolvedValue("mocked-presigned-url");
 
-// Jest mock AWS SDK clients correctly using Jest factory functions
 jest.mock("@aws-sdk/client-s3", () => {
   const original = jest.requireActual("@aws-sdk/client-s3");
   return {
