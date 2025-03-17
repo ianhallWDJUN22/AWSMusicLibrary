@@ -18,19 +18,22 @@ This **Music Library Service** is a serverless application designed to manage MP
 
 ---
 
-## Architecture Overview  
+## Tech Stack 
 
-
-### **Frontend**  
-- React-based UI for file management.  
-
-### **Backend**  
-- AWS Lambda functions, API Gateway, and S3.  
-
-### **Infrastructure**  
-- AWS CDK for defining and deploying resources.  
+- **React**
+- **React-Bootstrap**
+- **AWS CDK**
+- **AWS SDK**
+- **AWS Lambda**
+- **AWS ApiGateway**
+- **AWS S3**
+- **Typescript**
+- **Node.js** 
 
 ---
+## Dataflow Diagram
+
+version 1
 
 ![Alt Text](images/dataflowScreenshot.png)
 
@@ -136,7 +139,8 @@ aws logs tail /aws/lambda/your-lambda-function-name --follow
 ## Roadmap
 
 ### **Next Version:**
-- **User Authentication**: Implement authentication for API requests and private music libraries.  
+- **Autonomous CI/CD**: Set up pipeline to automatically run test cases, deploy stack, etc. for seamless CI/CD.
+- **User Authentication**: Implement authentication using Cognito for API requests and private music libraries.  
 - **Database Integration**: Store metadata (e.g. file names, upload date, user info) in DynamoDB.  
 - **Optimized Presigned URL Generation**: Modify presigned URL generation to be triggered only when requested, improving efficiency and URL validity for playback, editing, and deletion.
 
