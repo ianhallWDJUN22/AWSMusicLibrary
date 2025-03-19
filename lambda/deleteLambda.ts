@@ -20,7 +20,6 @@ export const handler = async (event: any): Promise<any> => {
   }
 
   console.log(`Delete lambda invoked for bucket: ${bucketName}`);
-  console.log(`Event received: ${JSON.stringify(event)}`);
 
   try {
     // Extract the file name from query string parameters

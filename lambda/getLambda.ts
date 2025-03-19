@@ -11,7 +11,6 @@ export const handler = async (event: any): Promise<any> => {
 
   const bucketName: string = process.env.BUCKET_NAME;
   console.log(`Get Lambda invoked for bucket: ${bucketName}`);
-  console.log(`Received event: ${JSON.stringify(event)}`);
 
   try {
     const fileName = event.queryStringParameters?.fileName;

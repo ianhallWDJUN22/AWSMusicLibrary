@@ -11,7 +11,6 @@ const handler = async (event) => {
     }
     const bucketName = process.env.BUCKET_NAME;
     console.log(`Get Lambda invoked for bucket: ${bucketName}`);
-    console.log(`Received event: ${JSON.stringify(event)}`);
     try {
         const fileName = event.queryStringParameters?.fileName;
         if (fileName) {
@@ -29,9 +28,7 @@ const handler = async (event) => {
     }
 };
 exports.handler = handler;
-/**
- * Retrieves a list of files from the S3 bucket with presigned URLs.
- */
+// Retrieves a list of files from the S3 bucket with presigned URLs.
 const listFiles = async (bucketName) => {
     console.log("Fetching list of files from S3 bucket...");
     const listObjectsCommand = new client_s3_1.ListObjectsV2Command({ Bucket: bucketName });
@@ -51,18 +48,14 @@ const listFiles = async (bucketName) => {
     }));
     return createSuccessResponse(musicFilesWithUrls);
 };
-/**
- * Generates a presigned URL for retrieving just one file from S3.
- */
+// Generates a presigned URL for retrieving just one file from S3.
 const generatePresignedGetUrl = async (bucketName, fileName) => {
     console.log(`Generating presigned GET URL for file: ${fileName}`);
     const getCommand = new client_s3_1.GetObjectCommand({ Bucket: bucketName, Key: fileName });
     const presignedUrl = await (0, s3_request_presigner_1.getSignedUrl)(client, getCommand, { expiresIn: 15 * 60 });
     return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
-/**
- * Utility function to create a success response with CORS headers.
- */
+// Utility function to create a success response with CORS headers.
 const createSuccessResponse = (body) => ({
     statusCode: 200,
     headers: {
@@ -72,9 +65,7 @@ const createSuccessResponse = (body) => ({
     },
     body: JSON.stringify(body),
 });
-/**
- * Utility function to create an error response with CORS headers.
- */
+// Utility function to create an error response with CORS headers.
 const createErrorResponse = (statusCode, message) => ({
     statusCode,
     headers: {

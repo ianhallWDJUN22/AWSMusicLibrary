@@ -12,7 +12,6 @@ const handler = async (event) => {
     }
     const bucketName = process.env.BUCKET_NAME;
     console.log(`Upload Lambda invoked for bucket: ${bucketName}`);
-    console.log(`Event body: ${JSON.stringify(event)}`);
     try {
         if (!event.body) {
             return createErrorResponse(400, "No file data received");
@@ -29,9 +28,7 @@ const handler = async (event) => {
     }
 };
 exports.handler = handler;
-/**
- * Handles file upload by checking for duplicates and generating a presigned upload URL.
- */
+// Handles file upload by checking for duplicates and generating a presigned upload URL.
 const handleUpload = async (bucketName, fileName) => {
     console.log(`Checking if file ${fileName} already exists...`);
     const listCommand = new client_s3_1.ListObjectsV2Command({ Bucket: bucketName, Prefix: fileName });
@@ -45,9 +42,7 @@ const handleUpload = async (bucketName, fileName) => {
     const presignedUrl = await (0, s3_request_presigner_1.getSignedUrl)(client, uploadCommand, { expiresIn: 15 * 60 });
     return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
-/**
- * Utility function to create a success response with CORS headers.
- */
+// Utility function to create a success response with CORS headers.
 const createSuccessResponse = (body) => ({
     statusCode: 200,
     headers: {
@@ -57,9 +52,7 @@ const createSuccessResponse = (body) => ({
     },
     body: JSON.stringify(body),
 });
-/**
- * Utility function to create an error response with CORS headers.
- */
+// Utility function to create an error response with CORS headers.
 const createErrorResponse = (statusCode, message) => ({
     statusCode,
     headers: {

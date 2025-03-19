@@ -20,7 +20,6 @@ const handler = async (event) => {
         };
     }
     console.log(`Delete lambda invoked for bucket: ${bucketName}`);
-    console.log(`Event received: ${JSON.stringify(event)}`);
     try {
         // Extract the file name from query string parameters
         const fileName = event.queryStringParameters?.fileName;

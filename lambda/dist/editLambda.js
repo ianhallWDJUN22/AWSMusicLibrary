@@ -9,7 +9,6 @@ const handler = async (event) => {
     }
     const bucketName = process.env.BUCKET_NAME;
     console.log(`edit lambda invoked for bucket: ${bucketName}`);
-    console.log(`event body: ${JSON.stringify(event)}`);
     try {
         if (!event.body) {
             return { statusCode: 400, body: JSON.stringify({ message: "No file data received" }) };

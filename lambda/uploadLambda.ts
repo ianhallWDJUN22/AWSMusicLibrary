@@ -12,7 +12,6 @@ export const handler = async (event: any): Promise<any> => {
 
   const bucketName: string = process.env.BUCKET_NAME;
   console.log(`Upload Lambda invoked for bucket: ${bucketName}`);
-  console.log(`Event body: ${JSON.stringify(event)}`);
 
   try {
     if (!event.body) {
