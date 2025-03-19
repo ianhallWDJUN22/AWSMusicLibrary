@@ -60,9 +60,9 @@ describe('Edit Lambda Handler', () => {
 
   test('successfully renames a file', async () => {
     mockSend
-      .mockResolvedValueOnce({ Contents: [], $metadata: {} } as ListObjectsV2CommandOutput) // list command
-      .mockResolvedValueOnce({}) // copy command
-      .mockResolvedValueOnce({}); // delete command
+      .mockResolvedValueOnce({ Contents: [], $metadata: {} } as ListObjectsV2CommandOutput)
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({});
 
     const response = await handler({
       body: JSON.stringify({ oldFileName: 'old.mp3', newFileName: 'new.mp3' }),

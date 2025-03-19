@@ -1,13 +1,8 @@
 import React from "react";
-
-// Import Bootstrap
 import { Nav, Navbar, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
-
-// Import Custom CSS
 import "./App.css";
 
-// Import from react-router-dom
 import {
     BrowserRouter as Router,
     Routes,
@@ -15,7 +10,6 @@ import {
     Link
 } from "react-router-dom";
 
-// Import other React Component
 import UploadMusicFile from "./Components/upload-music-file.component";
 import MusicList from "./Components/music-list.component";
 

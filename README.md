@@ -158,6 +158,6 @@ aws logs tail /aws/lambda/your-lambda-function-name --follow
 * `npm run watch`   watch for changes and compile
 * `npm test`        perform the jest unit tests
 
-From the 'frontend' directory ({root-directory}/FrontendMusicLibrary/frontend):
+From the 'frontend' directory ({root-directory}/frontend):
 
 * `npm start`       run app on localhost:3000
