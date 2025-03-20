@@ -18,7 +18,8 @@ phases:
   build:
     commands:
       - echo "Running tests and type checks"
-      - echo "BUCKET_NAME from buildspec: $BUCKET_NAME"  # Debugging step
+      - |
+        echo "BUCKET_NAME from buildspec: $BUCKET_NAME"
       - npm run build --if-present
       - npm test || exit 1  # Ensure build fails if tests fail
 
