@@ -11,8 +11,8 @@ phases:
       - rm -rf node_modules
       - rm -rf package-lock.json  # Ensure fresh install
       - rm -rf test/**/*.d.ts  # Remove unexpected test files
-      - export BUCKET_NAME="test-bucket"  # Explicitly set env variable
-      - echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
+      - |
+       echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
 
   install:
     runtime-versions:
