@@ -1,0 +1,19 @@
+env:
+  variables:
+    BUCKET_NAME: "musiclibrarystack-musicuploadbucket9712f54f-0rwettwctk5e"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Cleaning up old cache files..."
+      - rm -rf node_modules/.cache
+      - rm -rf test/**/*.d.ts
+      - echo "Ensuring BUCKET_NAME is set"
+      - echo "BUCKET_NAME=$BUCKET_NAME" >> $CODEBUILD_SRC_DIR/.env
+  build:
+    commands:
+      - echo "Loading environment variables"
+      - export $(cat .env | xargs)
+      - echo "BUCKET_NAME is set to: $BUCKET_NAME"
+      - npm run build --if-present
+      - npm test
