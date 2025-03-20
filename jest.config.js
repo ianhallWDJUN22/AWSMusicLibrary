@@ -5,12 +5,15 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
-
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'lambda/**/*.ts',       
-    '!lambda/**/*.d.ts'
+    '!lambda/**/*.d.ts'  // Ensure .d.ts files are ignored from coverage
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
+  
+  // Add this to ignore .d.ts files in test execution
+  testPathIgnorePatterns: ['\\.d\\.ts$']
 };
+
