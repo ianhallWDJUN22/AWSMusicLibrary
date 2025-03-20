@@ -5,12 +5,14 @@ import { S3Client, ListObjectsV2Command, PutObjectCommand } from "@aws-sdk/clien
 const client = new S3Client({ region: "us-east-1" });
 
 export const handler = async (event: any): Promise<any> => {
-  if (!process.env.BUCKET_NAME) {
-    console.error("Bucket name not configured");
+  // Ensure BUCKET_NAME is retrieved at runtime (fixes Jest test failures)
+  const bucketName = process.env.BUCKET_NAME || "";
+
+  if (!bucketName) {
+    console.error("Bucket name is not configured in environment variables");
     return createErrorResponse(500, "Bucket name not configured");
   }
 
-  const bucketName: string = process.env.BUCKET_NAME;
   console.log(`Upload Lambda invoked for bucket: ${bucketName}`);
 
   try {
@@ -30,10 +32,9 @@ export const handler = async (event: any): Promise<any> => {
   }
 };
 
-
 // Handles file upload by checking for duplicates and generating a presigned upload URL.
 const handleUpload = async (bucketName: string, fileName: string) => {
-  console.log(`Checking if file ${fileName} already exists...`);
+  console.log(`Checking if file ${fileName} already exists in bucket: ${bucketName}...`);
 
   const listCommand = new ListObjectsV2Command({ Bucket: bucketName, Prefix: fileName });
   const existingFiles = await client.send(listCommand);
@@ -50,7 +51,6 @@ const handleUpload = async (bucketName: string, fileName: string) => {
   return createSuccessResponse({ downloadUrl: presignedUrl, fileName });
 };
 
-
 // Utility function to create a success response with CORS headers.
 const createSuccessResponse = (body: any) => ({
   statusCode: 200,
@@ -61,7 +61,6 @@ const createSuccessResponse = (body: any) => ({
   },
   body: JSON.stringify(body),
 });
-
 
 // Utility function to create an error response with CORS headers.
 const createErrorResponse = (statusCode: number, message: string) => ({

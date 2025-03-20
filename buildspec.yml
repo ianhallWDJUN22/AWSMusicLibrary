@@ -22,8 +22,12 @@ phases:
       - echo "Setting up environment variables..."
       - |
        aws s3 ls s3://$BUCKET_NAME || echo "Warning: No access to bucket $BUCKET_NAME"
+      - echo "Environment Variables:"
+      - printenv
       - |
        echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
+      - echo "Testing S3 access..."
+      - aws s3 ls s3://test-bucket --region us-east-1
 
   build:
     commands:

@@ -1,4 +1,5 @@
 module.exports = {
+  setupFiles: ["./jest.setup.js"],
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
   testMatch: ['**/test/**/*.[jt]s?(x)'],

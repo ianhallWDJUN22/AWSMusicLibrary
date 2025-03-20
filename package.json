@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "BUCKET_NAME=test-bucket jest",
     "cdk": "cdk",
     "build-lambda": "tsc -p lambda/tsconfig.json"
   },

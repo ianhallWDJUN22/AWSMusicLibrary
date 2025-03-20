@@ -1,5 +1,7 @@
 import { handler } from '../../lambda/deleteLambda';
 
+console.log("BUCKET_NAME in test:", process.env.BUCKET_NAME);
+
 const mockSend = jest.fn();
 
 jest.mock('@aws-sdk/client-s3', () => {

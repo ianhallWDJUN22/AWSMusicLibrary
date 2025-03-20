@@ -33,14 +33,17 @@ describe("Get Lambda Handler", () => {
   test("returns error if BUCKET_NAME is not configured", async () => {
     delete process.env.BUCKET_NAME;
     const response = await handler({ queryStringParameters: {} });
+
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body)).toEqual({ message: "Bucket name not configured" });
+    expect(JSON.parse(response.body)).toEqual({
+      message: "Bucket name not configured in environment variables",
+    });
   });
 
   test("returns empty file list if no files exist", async () => {
     mockSend.mockResolvedValueOnce({
       Contents: [],
-      $metadata: {}, 
+      $metadata: {},
     } as ListObjectsV2CommandOutput);
 
     const response = await handler({ queryStringParameters: {} });
@@ -52,7 +55,7 @@ describe("Get Lambda Handler", () => {
   test("returns a list of files with presigned URLs", async () => {
     mockSend.mockResolvedValueOnce({
       Contents: [{ Key: "song1.mp3" }, { Key: "song2.mp3" }],
-      $metadata: {}, 
+      $metadata: {},
     } as ListObjectsV2CommandOutput);
 
     const response = await handler({ queryStringParameters: {} });
@@ -86,6 +89,9 @@ describe("Get Lambda Handler", () => {
     const response = await handler({ queryStringParameters: {} });
 
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.body)).toEqual({ message: "Could not process request" });
+    expect(JSON.parse(response.body)).toEqual({
+      message: "Could not process request",
+      error: "S3 Error",
+    });
   });
 });
