@@ -14,6 +14,13 @@ phases:
       - npm install -g typescript  # Ensure TypeScript is globally available
       - npm install --save-dev @types/node @types/jest  # Ensure Node & Jest types
       - npm install --save aws-cdk-lib constructs @aws-sdk/client-s3 @aws-sdk/s3-request-presigner  # Install AWS SDK & CDK dependencies
+      - echo "Setting up AWS credentials..."
+      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - aws configure set default.region us-east-1
+      - echo "Checking IAM identity..."
+      - aws sts get-caller-identity
+
 
   pre_build:
     commands:

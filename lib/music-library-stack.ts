@@ -56,9 +56,24 @@ export class MusicLibraryStack extends cdk.Stack {
 
     // Grant S3 access
     bucket.grantReadWrite(uploadMusicFunction);
-    bucket.grantRead(getMusicFunction);
+    bucket.grantReadWrite(getMusicFunction);
     bucket.grantReadWrite(editMusicFunction);
     bucket.grantReadWrite(deleteMusicFunction);
+
+    const s3Policy = new cdk.aws_iam.PolicyStatement({
+      actions: [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:DeleteObject",
+      ],
+      resources: [bucket.bucketArn, `${bucket.bucketArn}/*`],
+    });
+    
+    uploadMusicFunction.addToRolePolicy(s3Policy);
+    getMusicFunction.addToRolePolicy(s3Policy);
+    editMusicFunction.addToRolePolicy(s3Policy);
+    deleteMusicFunction.addToRolePolicy(s3Policy);
 
     const api = new apigateway.RestApi(this, "MusicAPIIngestion", {
       restApiName: "MusicLibraryService",
