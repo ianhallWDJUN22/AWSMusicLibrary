@@ -1,3 +1,5 @@
+version: 0.2
+
 env:
   variables:
     BUCKET_NAME: "musiclibrarystack-musicuploadbucket9712f54f-0rwettwctk5e"
@@ -7,13 +9,22 @@ phases:
     commands:
       - echo "Cleaning up old cache files..."
       - rm -rf node_modules/.cache
-      - rm -rf test/**/*.d.ts
-      - echo "Ensuring BUCKET_NAME is set"
-      - echo "BUCKET_NAME=$BUCKET_NAME" >> $CODEBUILD_SRC_DIR/.env
+      - rm -rf test/**/*.d.ts  # Remove any unexpected .d.ts test files
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo "Installing dependencies"
+      - npm install
   build:
     commands:
-      - echo "Loading environment variables"
-      - export $(cat .env | xargs)
-      - echo "BUCKET_NAME is set to: $BUCKET_NAME"
+      - echo "Running tests and type checks"
+      - echo "BUCKET_NAME is $BUCKET_NAME"
       - npm run build --if-present
       - npm test
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+      - echo "Clearing CodeBuild cache..."
+      - rm -rf ~/.npm
+      - rm -rf /root/.cache
