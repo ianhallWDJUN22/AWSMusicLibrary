@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  variables:
+    BUCKET_NAME: "test-bucket"
+
 phases:
   pre_build:
     commands:
@@ -7,6 +11,8 @@ phases:
       - rm -rf node_modules
       - rm -rf package-lock.json  # Ensure fresh install
       - rm -rf test/**/*.d.ts  # Remove unexpected test files
+      - export BUCKET_NAME="test-bucket"  # Explicitly set env variable
+      - echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
 
   install:
     runtime-versions:
@@ -14,19 +20,17 @@ phases:
     commands:
       - echo "Installing dependencies"
       - npm install
+      - npm install -g typescript  # Ensure TypeScript is available
 
   build:
     commands:
       - echo "Running tests and type checks"
-      - |
-        echo "BUCKET_NAME from buildspec: $BUCKET_NAME"
-      - npm run build --if-present
+      - npm run build --if-present || npx tsc  # Run tsc explicitly if needed
       - npm test || exit 1  # Ensure build fails if tests fail
 
   post_build:
     commands:
-      - echo "Build completed on `date`"
+      - echo "Build completed on $(date)"
       - echo "Clearing CodeBuild cache..."
       - rm -rf ~/.npm
       - rm -rf /root/.cache
-
