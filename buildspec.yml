@@ -11,21 +11,24 @@ phases:
       - rm -rf node_modules
       - rm -rf package-lock.json  # Ensure fresh install
       - rm -rf test/**/*.d.ts  # Remove unexpected test files
+      - export BUCKET_NAME="test-bucket"  # Explicitly set env variable
       - |
-       echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
+        echo "BUCKET_NAME from buildspec: ${BUCKET_NAME}"
 
   install:
     runtime-versions:
       nodejs: 18
     commands:
-      - echo "Installing dependencies"
-      - npm install
+      - echo "Installing dependencies..."
+      - npm ci  # Ensures consistent installs based on package-lock.json
       - npm install -g typescript  # Ensure TypeScript is available
+      - npm install --save-dev @types/node @types/jest  # Ensure Node & Jest types
+      - npm install --save aws-cdk-lib constructs @aws-sdk/client-s3 @aws-sdk/s3-request-presigner  # Install AWS SDK & CDK dependencies
 
   build:
     commands:
       - echo "Running tests and type checks"
-      - npm run build --if-present || npx tsc  # Run tsc explicitly if needed
+      - npm run build --if-present || npx tsc  # Run TypeScript build
       - npm test || exit 1  # Ensure build fails if tests fail
 
   post_build:
