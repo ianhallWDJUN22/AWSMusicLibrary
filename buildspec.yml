@@ -1,30 +1,31 @@
 version: 0.2
 
-env:
-  variables:
-    BUCKET_NAME: "musiclibrarystack-musicuploadbucket9712f54f-0rwettwctk5e"
-
 phases:
   pre_build:
     commands:
       - echo "Cleaning up old cache files..."
-      - rm -rf node_modules/.cache
-      - rm -rf test/**/*.d.ts  # Remove any unexpected .d.ts test files
+      - rm -rf node_modules
+      - rm -rf package-lock.json  # Ensure fresh install
+      - rm -rf test/**/*.d.ts  # Remove unexpected test files
+
   install:
     runtime-versions:
       nodejs: 18
     commands:
       - echo "Installing dependencies"
       - npm install
+
   build:
     commands:
       - echo "Running tests and type checks"
-      - echo "BUCKET_NAME is $BUCKET_NAME"
+      - echo "BUCKET_NAME from buildspec: $BUCKET_NAME"  # Debugging step
       - npm run build --if-present
-      - npm test
+      - npm test || exit 1  # Ensure build fails if tests fail
+
   post_build:
     commands:
       - echo "Build completed on `date`"
       - echo "Clearing CodeBuild cache..."
       - rm -rf ~/.npm
       - rm -rf /root/.cache
+
