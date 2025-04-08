@@ -4,7 +4,7 @@ import { Table } from "react-bootstrap";
 import MusicTableRow from "./MusicTableRow.js";
 
 const MusicList = () => {
-  const [music, setMusic] = useState([]);
+  const [musicList, setMusicList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,41 +23,45 @@ const MusicList = () => {
         }
       )
       .then(({ data }) => {
-        setMusic(data);
+        setMusicList(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching music:", error);
+        console.error("Error fetching musicList:", error);
         setLoading(false);
       });
   };
 
   // Ensures file is actually deleted from S3 before updating UI
   const handleDeleteFile = async (fileName) => {
-    setMusic((prevMusic) => prevMusic.filter((file) => file.fileName !== fileName));
+    setMusicList((prevMusic) =>
+      prevMusic.filter((file) => file.fileName !== fileName)
+    );
   };
 
   const handleRenameFile = (oldFileName, newFileName) => {
-    setMusic((prevMusic) =>
+    setMusicList((prevMusic) =>
       prevMusic.map((file) =>
-        file.fileName === oldFileName ? { ...file, fileName: newFileName } : file
+        file.fileName === oldFileName
+          ? { ...file, fileName: newFileName }
+          : file
       )
     );
   };
 
   return (
-    <div className="table-wrapper">
-      <h2 className="music-list-header">Music List</h2>
+    <div className='table-wrapper'>
+      <h2 className='musicList-list-header'>Music List</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <Table className="table-background" striped bordered hover>
-          <thead className="table-row-head">
+        <Table className='table-background' striped bordered hover>
+          <thead className='table-row-head'>
             <tr></tr>
           </thead>
           <tbody>
-            {music.length > 0 ? (
-              music.map((file) => (
+            {musicList.length > 0 ? (
+              musicList.map((file) => (
                 <MusicTableRow
                   obj={file}
                   key={file.fileName}
@@ -67,7 +71,7 @@ const MusicList = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3">No files found</td>
+                <td colSpan='3'>No files found</td>
               </tr>
             )}
           </tbody>

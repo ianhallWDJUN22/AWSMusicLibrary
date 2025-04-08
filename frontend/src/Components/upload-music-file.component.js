@@ -42,7 +42,9 @@ const UploadMusicFile = () => {
 
       // Handle duplicate file error
       if (response.status === 409) {
-        setError("A file with this name already exists. Please choose a different name.");
+        setError(
+          "A file with this name already exists. Please choose a different name."
+        );
         setLoading(false);
         return;
       }
@@ -57,7 +59,9 @@ const UploadMusicFile = () => {
         transformRequest: [(data) => data],
       });
 
-      setSuccessMessage("File successfully uploaded!  Vist the Music List page to listen to your songs"); 
+      setSuccessMessage(
+        "File successfully uploaded!  Vist the Music List page to listen to your songs"
+      );
 
       // Reset form fields after successful upload
       setSelectedFile(null);
@@ -65,7 +69,9 @@ const UploadMusicFile = () => {
       document.getElementById("fileInput").value = "";
     } catch (err) {
       console.error("Upload error:", err);
-      setError("Something went wrong: " + (err.response?.data?.message || err.message));
+      setError(
+        "Something went wrong: " + (err.response?.data?.message || err.message)
+      );
     } finally {
       setLoading(false); // Hide loading message
     }
@@ -73,16 +79,20 @@ const UploadMusicFile = () => {
 
   return (
     <div>
-      {loading && <p>Uploading file... Please wait.</p>} {/* Show loading message during upload */}
-      {error && <p style={{ color: "red" }}>{error}</p>} {/* Show duplicate file error */}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>} {/* Show success message */}
-      
       <MusicUploadForm
         initialValues={{ name: "", file: null }}
         onSubmit={onSubmit}
         onFileSelect={setSelectedFile}
         enableReinitialize
       />
+      {loading && <p>Uploading file... Please wait.</p>}{" "}
+      {/* Show loading message during upload */}
+      {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+      {/* Show duplicate file error */}
+      {successMessage && (
+        <p style={{ color: "green" }}>{successMessage}</p>
+      )}{" "}
+      {/* Show success message */}
     </div>
   );
 };

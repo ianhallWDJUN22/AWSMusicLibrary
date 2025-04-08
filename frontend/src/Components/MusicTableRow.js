@@ -63,7 +63,9 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
       );
 
       if (response.status === 409) {
-        setError("A file with this name already exists. Choose a different name.");
+        setError(
+          "A file with this name already exists. Choose a different name."
+        );
       } else {
         console.log("Rename Response:", response.data);
         if (onRename) {
@@ -109,11 +111,11 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
 
   return (
     <tr>
-      <td className="table-row-play-button">
-        <div className="play-button-wrapper">
+      <td className='table-row-play-button'>
+        <div className='play-button-wrapper'>
           <Button
-            className="play-button action-button"
-            variant="info"
+            className='play-button action-button'
+            variant='info'
             onClick={handlePlay}
             disabled={loading}
           >
@@ -122,35 +124,35 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
         </div>
       </td>
       <td>
-        <div className="list-table-left">
-          <div className="list-name-wrapper">
+        <div className='list-table-left'>
+          <div className='list-name-wrapper'>
             {isEditing ? (
-              <div className="edit-input-wrapper">
-              <label>
-                <FormControl
-                  id="rename-input"
-                  type="text"
-                  className="edit-input"
-                  value={newFileName}
-                  onChange={(e) => setNewFileName(e.target.value)}
-                  autoFocus
-                />
+              <div className='edit-input-wrapper'>
+                <label>
+                  <FormControl
+                    id='rename-input'
+                    type='text'
+                    className='edit-input'
+                    value={newFileName}
+                    onChange={(e) => setNewFileName(e.target.value)}
+                    autoFocus
+                  />
                 </label>
-                {error && <span className="error-message">{error}</span>}
+                {error && <span className='error-message'>{error}</span>}
               </div>
             ) : (
-              <div className="list-file-name">{fileName}</div>
+              <div className='list-file-name'>{fileName}</div>
             )}
           </div>
         </div>
       </td>
 
       <td>
-        <div className="action-button-group">
+        <div className='action-button-group'>
           {!isEditing && (
             <Button
-              className="edit-button"
-              variant="warning"
+              className='edit-button'
+              variant='warning'
               onClick={handleEdit}
               disabled={loading}
             >
@@ -159,8 +161,8 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
           )}
           {!isEditing && (
             <Button
-              className="delete-button"
-              variant="danger"
+              className='delete-button'
+              variant='danger'
               onClick={handleDelete}
               disabled={loading}
             >
@@ -168,24 +170,24 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
             </Button>
           )}
           {isEditing && (
-           <>
+            <>
               <Button
-                className="submit-edit-button"
-                variant="success"
+                className='submit-edit-button'
+                variant='success'
                 onClick={handleRename}
                 disabled={loading}
               >
                 Submit
               </Button>
               <Button
-                className="cancel-edit-button"
-                variant="secondary"
+                className='cancel-edit-button'
+                variant='secondary'
                 onClick={handleCancel}
                 disabled={loading}
               >
                 Cancel
               </Button>
-              </>
+            </>
           )}
         </div>
       </td>
@@ -194,4 +196,3 @@ const MusicTableRow = ({ obj, onDelete, onRename }) => {
 };
 
 export default MusicTableRow;
-
